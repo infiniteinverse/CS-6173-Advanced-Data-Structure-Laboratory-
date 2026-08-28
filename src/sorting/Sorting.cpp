@@ -3,9 +3,9 @@
 #include <algorithm>
 
 
-void BubbleSort::sort(std::vector<int>& data) {
+int BubbleSort::sort(std::vector<int>& data) {
         size_t n = data.size();
-
+        int comparison = 0;
         for(int i = 1; i < n; i++) {
 
             bool swapped = false;
@@ -15,12 +15,14 @@ void BubbleSort::sort(std::vector<int>& data) {
                     swapped = true;
                     std::swap(data[j], data[j-1]);
                 }
+                comparison++;
             }
 
             if(swapped == false) {
                 break;
             }
         }
+        return comparison;
     }
 
 
