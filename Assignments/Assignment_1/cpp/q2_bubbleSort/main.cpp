@@ -21,19 +21,52 @@ int main(){
     RandomInputGenerator generator;
     BubbleSort bSortWithtEarlyStopping;
     // highly randomly ordered data;
-    std::fstream file("comparisonHighlyRandom.csv", std::ios::in | std::ios::out | std::ios::trunc);
-    if(!file.is_open()) throw std::runtime_error("File not openeed!!");
+    std::fstream file1("comparisonHighlyRandom.csv", std::ios::in | std::ios::out | std::ios::trunc);
+    if(!file1.is_open()) throw std::runtime_error("File not openeed!!");
 
-    file<< "InputSize, Comp(NES), Comp(ES)" << "\n";
+    file1<< "InputSize, Comp(NES), Comp(ES)" << "\n";
 
     int cmpWithoutEarlyStopping = 0, cmpWithEarlyStopping = 0;
     for(int datasize = 1; datasize <= 100; datasize++){
         std::vector<int> data = generator.generateInput(datasize, 1, 1000, InputType::HIGHLY_INVERSIONAL);
         cmpWithEarlyStopping = bSortWithtEarlyStopping.sort(data);
         cmpWithoutEarlyStopping = bSortWithoutEarlyStopping(data);
-        file << datasize << ", " << cmpWithoutEarlyStopping << ", " << cmpWithEarlyStopping << "\n";
+        file1 << datasize << ", " << cmpWithoutEarlyStopping << ", " << cmpWithEarlyStopping << "\n";
     }
 
-    file.close();
+    file1.close();
+
+    // nearly sorted data;
+    std::fstream file2("comparisonNearlySorted.csv", std::ios::in | std::ios::out | std::ios::trunc);
+    if(!file2.is_open()) throw std::runtime_error("File not openeed!!");
+
+    file2<< "InputSize, Comp(NES), Comp(ES)" << "\n";
+
+    cmpWithoutEarlyStopping = 0, cmpWithEarlyStopping = 0;
+    for(int datasize = 1; datasize <= 100; datasize++){
+        std::vector<int> data = generator.generateInput(datasize, 1, 1000, InputType::NEARLY_SORTED);
+        cmpWithEarlyStopping = bSortWithtEarlyStopping.sort(data);
+        cmpWithoutEarlyStopping = bSortWithoutEarlyStopping(data);
+        file2 << datasize << ", " << cmpWithoutEarlyStopping << ", " << cmpWithEarlyStopping << "\n";
+    }
+
+    file2.close();
+
+    // sorted data;
+    std::fstream file3("comparisonSorted.csv", std::ios::in | std::ios::out | std::ios::trunc);
+    if(!file3.is_open()) throw std::runtime_error("File not openeed!!");
+
+    file3<< "InputSize, Comp(NES), Comp(ES)" << "\n";
+
+    cmpWithoutEarlyStopping = 0, cmpWithEarlyStopping = 0;
+    for(int datasize = 1; datasize <= 100; datasize++){
+        std::vector<int> data = generator.generateInput(datasize, 1, 1000, InputType::SORTED);
+        cmpWithEarlyStopping = bSortWithtEarlyStopping.sort(data);
+        cmpWithoutEarlyStopping = bSortWithoutEarlyStopping(data);
+        file3 << datasize << ", " << cmpWithoutEarlyStopping << ", " << cmpWithEarlyStopping << "\n";
+    }
+
+    file3.close();
     
+    return 0;
 }
