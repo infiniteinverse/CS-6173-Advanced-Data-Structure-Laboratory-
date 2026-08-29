@@ -7,7 +7,7 @@ class BubbleSort {
 private:
 
 public:
-    static void sort(std::vector<int>& data) ;
+    static int sort(std::vector<int>& data) ;
 
     
 };
@@ -15,7 +15,8 @@ public:
 class InsertionSort {
 private:
 public:
-    static void sort(std::vector<int>& data); 
+    static int sort(std::vector<int>& data);
+    static int sort(std::vector<int>& data, int start, int end); 
 };
 
 
@@ -29,6 +30,7 @@ enum class PartitionScheme {
 
 class QuickSort {
 private:
+    static long long comparisons;
 public:
     static int lomutoPartition(std::vector<int>& data, int start, int end); 
 
@@ -38,4 +40,7 @@ public:
 
 
     static void sort(std::vector<int>& data, int start, int end, PartitionScheme scheme);
+
+    static void resetComparisons();
+    static long long getComparisons();
 };

@@ -5,6 +5,7 @@
 build/
 cmake-build-*/
 
+~$b submission theme.docx
 
 # ============================================================
 # C / C++ build artifacts
