@@ -28,9 +28,10 @@ int main(){
 
     int cmpWithoutEarlyStopping = 0, cmpWithEarlyStopping = 0;
     for(int datasize = 1; datasize <= 100; datasize++){
-        std::vector<int> data = generator.generateInput(datasize, 1, 1000, InputType::HIGHLY_INVERSIONAL);
-        cmpWithEarlyStopping = bSortWithtEarlyStopping.sort(data);
-        cmpWithoutEarlyStopping = bSortWithoutEarlyStopping(data);
+        std::vector<int> b1Data = generator.generateInput(datasize, 1, 1000, InputType::HIGHLY_INVERSIONAL);
+        std::vector<int> b2Data= b1Data;
+        cmpWithEarlyStopping = bSortWithtEarlyStopping.sort(b1Data);
+        cmpWithoutEarlyStopping = bSortWithoutEarlyStopping(b2Data);
         file1 << datasize << ", " << cmpWithoutEarlyStopping << ", " << cmpWithEarlyStopping << "\n";
     }
 
@@ -44,9 +45,10 @@ int main(){
 
     cmpWithoutEarlyStopping = 0, cmpWithEarlyStopping = 0;
     for(int datasize = 1; datasize <= 100; datasize++){
-        std::vector<int> data = generator.generateInput(datasize, 1, 1000, InputType::NEARLY_SORTED);
-        cmpWithEarlyStopping = bSortWithtEarlyStopping.sort(data);
-        cmpWithoutEarlyStopping = bSortWithoutEarlyStopping(data);
+        std::vector<int> b1Data = generator.generateInput(datasize, 1, 1000, InputType::NEARLY_SORTED, SortOrder::ASCENDING,0.08);
+        std::vector<int> b2Data= b1Data;
+        cmpWithEarlyStopping = bSortWithtEarlyStopping.sort(b1Data);
+        cmpWithoutEarlyStopping = bSortWithoutEarlyStopping(b2Data);
         file2 << datasize << ", " << cmpWithoutEarlyStopping << ", " << cmpWithEarlyStopping << "\n";
     }
 
@@ -60,9 +62,10 @@ int main(){
 
     cmpWithoutEarlyStopping = 0, cmpWithEarlyStopping = 0;
     for(int datasize = 1; datasize <= 100; datasize++){
-        std::vector<int> data = generator.generateInput(datasize, 1, 1000, InputType::SORTED);
-        cmpWithEarlyStopping = bSortWithtEarlyStopping.sort(data);
-        cmpWithoutEarlyStopping = bSortWithoutEarlyStopping(data);
+        std::vector<int> b1Data = generator.generateInput(datasize, 1, 1000, InputType::SORTED);
+        std::vector<int> b2Data= b1Data;
+        cmpWithEarlyStopping = bSortWithtEarlyStopping.sort(b1Data);
+        cmpWithoutEarlyStopping = bSortWithoutEarlyStopping(b2Data);
         file3 << datasize << ", " << cmpWithoutEarlyStopping << ", " << cmpWithEarlyStopping << "\n";
     }
 
