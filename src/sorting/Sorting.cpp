@@ -273,8 +273,6 @@ void QuickSort::sort(
 }
 
 
-
-
 void QuickSort::resetComparisons()
 {
     comparisons = 0;
