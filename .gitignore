@@ -5,7 +5,10 @@
 build/
 cmake-build-*/
 
-~$b submission theme.docx
+
+# Microsoft Word temporary/lock files
+~$*.docx
+~$*.doc
 
 # ============================================================
 # C / C++ build artifacts
