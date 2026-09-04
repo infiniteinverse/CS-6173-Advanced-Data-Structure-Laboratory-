@@ -21,8 +21,8 @@ add_executable(assign1_q1
 )
 
 # Question 2: Bubble Sort
-add_executable(assign1_q2 
-    Assignments/Assignment_1/cpp/q2_bubbleSort/main.cpp 
+add_executable(assign1_avg_q2 
+    Assignments/Assignment_1/cpp/q2_bubbleSort/main_copy.cpp 
     ${SHARED_SOURCES}
 )
 
