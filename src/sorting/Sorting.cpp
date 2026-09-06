@@ -58,6 +58,7 @@ int InsertionSort::sort(std::vector<int>& data, int start, int end){
         int key = data[i];
         int j = i - 1;
         while(j>=start){
+            comparisons++;
             if(data[j] > key){
                 data[j+1] = data[j];
                 j--;

@@ -89,42 +89,54 @@ int main(){
    
     RandomInputGenerator generetor;
 
+    int TRIALS = 25;
     std::fstream file1("iqSortComparisonsSmallInputSize.csv", std::ios::in | std::ios::out | std::ios::trunc);
     if(!file1.is_open()) throw std::runtime_error("File not opened!!");
 
     file1<< "InputSize, Comp(ISort), Comp(QSort)" << "\n";
     for(int datasize = 10; datasize <= 100; datasize++){
-        std::vector<int> iSortData = generetor.generateInput(datasize, 1, 9999,InputType::HIGHLY_INVERSIONAL,SortOrder::ASCENDING, 0.75);
-        std::vector<int> qSortData = iSortData;
+        int comparisonISort = 0, comparisonQSort = 0;
+        for (int i=0; i<=TRIALS; i++){
+            std::vector<int> iSortData = generetor.generateInput(datasize, 1, 9999,InputType::HIGHLY_INVERSIONAL,SortOrder::ASCENDING, 0.75);
+            std::vector<int> qSortData = iSortData;
+    
+            comparisonISort += InsertionSort::sort(iSortData);
+    
+            QuickSort::sort(qSortData, 0, qSortData.size()-1, PartitionScheme::HOARE);
+            comparisonQSort += QuickSort::getComparisons();
+            QuickSort::resetComparisons();
+    
+        }
+        double avgISort = static_cast<double>(comparisonISort)/TRIALS;
+        double avgQSort = static_cast<double>(comparisonQSort)/TRIALS;
+        file1<< datasize << ", " << avgISort << ", " << avgQSort << "\n";
 
-        int iSortComparison = InsertionSort::sort(iSortData);
-
-        QuickSort::sort(qSortData, 0, qSortData.size()-1, PartitionScheme::HOARE);
-        int qSortComparison = QuickSort::getComparisons();
-        QuickSort::resetComparisons();
-
-        file1<< datasize << ", " << iSortComparison << ", " << qSortComparison << "\n";
     }
     file1.close();
     
-    // std::fstream file2("qhSortComparison.csv", std::ios::in | std::ios::out | std::ios::trunc);
-    // if(!file2.is_open()) throw std::runtime_error("File not opened!!");
+    std::fstream file2("qhSortComparison.csv", std::ios::in | std::ios::out | std::ios::trunc);
+    if(!file2.is_open()) throw std::runtime_error("File not opened!!");
 
-    // file2<< "InputSize, Comp(QSort), Comp(HQSort)" << "\n";
-    // for(int datasize = 100; datasize <= 400; datasize++){
-    //     std::vector<int> qSortData = generetor.generateInput(datasize, 1, 9999,InputType::HIGHLY_INVERSIONAL,SortOrder::ASCENDING, 0.75);
-    //     std::vector<int> hybridData = qSortData;
+    file2<< "InputSize, Comp(QSort), Comp(HQSort)" << "\n";
+    for(int datasize = 100; datasize <= 400; datasize++){
+        int qSortComparison = 0, hSortComparison = 0;
+        for(int i=0;i<=TRIALS;i++){
+        std::vector<int> qSortData = generetor.generateInput(datasize, 1, 9999,InputType::HIGHLY_INVERSIONAL,SortOrder::ASCENDING, 0.75);
+        std::vector<int> hybridData = qSortData;
 
-    //     QuickSort::sort(qSortData, 0, qSortData.size()-1, PartitionScheme::LOMUTO);
-    //     int qSortComparison = QuickSort::getComparisons();
-    //     QuickSort::resetComparisons();
+        QuickSort::sort(qSortData, 0, qSortData.size()-1, PartitionScheme::LOMUTO);
+        qSortComparison = QuickSort::getComparisons();
+        QuickSort::resetComparisons();
 
-    //     HybridSort::sort(hybridData);
-    //     int hSortComparison = HybridSort::getComparisons();
-    //     HybridSort::resetComparisons();
-    //     file2<< datasize << ", " << qSortComparison << ", " << hSortComparison << "\n";
-    // }
-    // file2.close();
+        HybridSort::sort(hybridData);
+        hSortComparison = HybridSort::getComparisons();
+        HybridSort::resetComparisons();
+    }
+    double avgQSort = static_cast<double>(qSortComparison)/TRIALS;
+    double avgHSort = static_cast<double>(hSortComparison)/TRIALS;
+    file2<< datasize << ", " << avgQSort << ", " << avgHSort << "\n";
+    file2.close();
 
     return 0;
  }
+ 
