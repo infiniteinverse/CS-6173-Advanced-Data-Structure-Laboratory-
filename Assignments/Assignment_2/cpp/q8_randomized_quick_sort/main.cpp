@@ -1,316 +1,165 @@
+#include "generation/RandomInputGenerator.hpp"
+#include "sorting/Sorting.hpp"
+
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <random>
-#include <chrono>
-#include <fstream>
 #include <algorithm>
 
-using namespace std;
-using namespace chrono;
 
+class RandomisedQuickSort {
+private:
+    static int comparison;
+    static std::random_device rd;
+    static std::mt19937 gen;
 
-// ============================================================
-// Conventional Quick Sort
-// ============================================================
+    static int hoare(std::vector<int>& data, int start, int end) {
+        
+        std::uniform_int_distribution<int> distrib(start, end-1); // to make sure that it is not loop infinitely
 
-int partitionNormal(
-    vector<int>& arr,
-    int low,
-    int high,
-    long long& comparisons
-)
-{
-    int pivot = arr[high];
+        int pivot = data[distrib(gen)];
 
-    int i = low - 1;
+        int left = start-1;
+        int right = end+1;
 
-    for (int j = low; j < high; j++)
-    {
-        comparisons++;
+        while(true) {
+            do {
+                left++;
+                comparison++;
+            } while(data[left] < pivot);
 
-        if (arr[j] <= pivot)
-        {
-            i++;
-            swap(arr[i], arr[j]);
-        }
-    }
+            do {
+                right--;
+                comparison++;
+            } while(data[right] > pivot);
 
-    swap(arr[i + 1], arr[high]);
+            if(left >= right) return right;
 
-    return i + 1;
-}
-
-
-void quickSortNormal(
-    vector<int>& arr,
-    int low,
-    int high,
-    long long& comparisons
-)
-{
-    if (low < high)
-    {
-        int pivotIndex =
-            partitionNormal(
-                arr,
-                low,
-                high,
-                comparisons
-            );
-
-        quickSortNormal(
-            arr,
-            low,
-            pivotIndex - 1,
-            comparisons
-        );
-
-        quickSortNormal(
-            arr,
-            pivotIndex + 1,
-            high,
-            comparisons
-        );
-    }
-}
-
-
-// ============================================================
-// Randomized Quick Sort
-// ============================================================
-
-int partitionRandomized(
-    vector<int>& arr,
-    int low,
-    int high,
-    long long& comparisons,
-    mt19937& generator
-)
-{
-    // Choose random pivot index
-    uniform_int_distribution<int> distribution(
-        low,
-        high
-    );
-
-    int randomIndex = distribution(generator);
-
-    // Move random pivot to the end
-    swap(arr[randomIndex], arr[high]);
-
-    int pivot = arr[high];
-
-    int i = low - 1;
-
-    for (int j = low; j < high; j++)
-    {
-        comparisons++;
-
-        if (arr[j] <= pivot)
-        {
-            i++;
-            swap(arr[i], arr[j]);
-        }
-    }
-
-    swap(arr[i + 1], arr[high]);
-
-    return i + 1;
-}
-
-
-void quickSortRandomized(
-    vector<int>& arr,
-    int low,
-    int high,
-    long long& comparisons,
-    mt19937& generator
-)
-{
-    if (low < high)
-    {
-        int pivotIndex =
-            partitionRandomized(
-                arr,
-                low,
-                high,
-                comparisons,
-                generator
-            );
-
-        quickSortRandomized(
-            arr,
-            low,
-            pivotIndex - 1,
-            comparisons,
-            generator
-        );
-
-        quickSortRandomized(
-            arr,
-            pivotIndex + 1,
-            high,
-            comparisons,
-            generator
-        );
-    }
-}
-
-
-// ============================================================
-// Main
-// ============================================================
-
-int main()
-{
-    // Random number generator
-    random_device rd;
-    mt19937 generator(rd());
-
-    // Random values for input array
-    uniform_int_distribution<int> valueDistribution(
-        1,
-        100000
-    );
-
-    // Output CSV
-    ofstream file(
-        "quicksort_comparison.csv"
-    );
-
-    if (!file.is_open())
-    {
-        cerr << "Error: Could not open CSV file.\n";
-        return 1;
-    }
-
-    // CSV header
-    file << "InputSize,"
-         << "NormalComparisons,"
-         << "RandomizedComparisons,"
-         << "NormalTime_us,"
-         << "RandomizedTime_us\n";
-
-
-    // Test different input sizes
-    for (int size = 100; size <= 10000; size += 100)
-    {
-        // ----------------------------------------------------
-        // Generate random input
-        // ----------------------------------------------------
-
-        vector<int> original(size);
-
-        for (int i = 0; i < size; i++)
-        {
-            original[i] =
-                valueDistribution(generator);
+            std::swap(data[left], data[right]);
         }
 
+        return right;
 
-        // ----------------------------------------------------
-        // Conventional Quick Sort
-        // ----------------------------------------------------
+    }
 
-        vector<int> normalArray = original;
+    static int lomuto(std::vector<int>& data, int start, int end) {
+        std::uniform_int_distribution<int> distrib(start, end);
 
-        long long normalComparisons = 0;
+        int p = distrib(gen);
+        int pivot = data[p];
 
-        auto startNormal =
-            high_resolution_clock::now();
+        std::swap(data[end], data[p]);
 
-        quickSortNormal(
-            normalArray,
-            0,
-            size - 1,
-            normalComparisons
-        );
-
-        auto endNormal =
-            high_resolution_clock::now();
-
-        auto normalTime =
-            duration_cast<microseconds>(
-                endNormal - startNormal
-            ).count();
-
-
-        // ----------------------------------------------------
-        // Randomized Quick Sort
-        // ----------------------------------------------------
-
-        vector<int> randomizedArray = original;
-
-        long long randomizedComparisons = 0;
-
-        auto startRandom =
-            high_resolution_clock::now();
-
-        quickSortRandomized(
-            randomizedArray,
-            0,
-            size - 1,
-            randomizedComparisons,
-            generator
-        );
-
-        auto endRandom =
-            high_resolution_clock::now();
-
-        auto randomizedTime =
-            duration_cast<microseconds>(
-                endRandom - startRandom
-            ).count();
-
-
-        // ----------------------------------------------------
-        // Verify that both arrays are sorted
-        // ----------------------------------------------------
-
-        if (!is_sorted(normalArray.begin(),
-                       normalArray.end()))
-        {
-            cerr << "Normal Quick Sort failed!\n";
-            return 1;
+        int left = start-1;
+        for(int right = start; right < end; right++) {
+            comparison++;
+            if(data[right] < pivot) {
+                left++;
+                std::swap(data[left], data[right]);
+            }
         }
 
-        if (!is_sorted(randomizedArray.begin(),
-                       randomizedArray.end()))
-        {
-            cerr << "Randomized Quick Sort failed!\n";
-            return 1;
-        }
-
-
-        // ----------------------------------------------------
-        // Write result to CSV
-        // ----------------------------------------------------
-
-        file << size << ","
-             << normalComparisons << ","
-             << randomizedComparisons << ","
-             << normalTime << ","
-             << randomizedTime
-             << "\n";
-
-
-        cout << "Input size: "
-             << size
-             << " | Normal comparisons: "
-             << normalComparisons
-             << " | Randomized comparisons: "
-             << randomizedComparisons
-             << "\n";
+        std::swap(data[left+1], data[end]);
+        return left+1;
     }
 
 
-    file.close();
+    static void sorting(std::vector<int>& data, int start, int end, PartitionScheme scheme) {
+        if(start >= end) return;
 
-    cout << "\n-------------------------------------\n";
-    cout << "Comparison completed.\n";
-    cout << "Results stored in:\n";
-    cout << "quicksort_comparison.csv\n";
-    cout << "-------------------------------------\n";
+        int p = 0;
+        switch(scheme) {
+            case PartitionScheme::LOMUTO:
+                p = lomuto(data, start, end);
+                sorting(data, start, p-1, scheme);
+                sorting(data, p+1, end, scheme);
+                break;
+
+            case PartitionScheme::HOARE:
+                p = hoare(data, start, end);
+                sorting(data, start, p, scheme);
+                sorting(data, p+1, end, scheme);
+                break;
+        }
+        
+    }
+
+public:
+
+    static int sort(std::vector<int>& data, PartitionScheme scheme) {
+        reset_comparison();
+        sorting(data, 0, data.size()-1, scheme);
+        return comparison;
+    }
+
+    static void reset_comparison() {
+        comparison = 0;
+    }
+
+    static int get_comparison() {
+        return comparison;
+    }
+
+};
+
+int RandomisedQuickSort::comparison {};
+std::random_device RandomisedQuickSort::rd{};
+std::mt19937 RandomisedQuickSort::gen(rd());
+
+
+int main() {
+    RandomInputGenerator generator {};
+
+    // highly inversional data set
+    std::fstream file("Assignments/Assignment_2/cpp/q8_randomized_quick_sort/q8_RandQuickVSQuickLomuto.csv", std::ios::in | std::ios::out | std::ios::trunc);
+    if(!file.is_open()) throw std::runtime_error("File does not exist or cannot be open");
+
+    file << "Datasize,RandQuickComp,QuickComp\n";
+
+    int MAX_SIZE = 1e3;
+    int TRAILS = 30;
+
+    for(int datasize = 1; datasize <= MAX_SIZE; datasize++) {
+        int total_comp_randquick = 0;
+        int total_comp_quick = 0;
+
+        for(int t = 1; t <= TRAILS; t++) {
+            std::vector<int> data1 = generator.generateInput(datasize, 1, 1e3, InputType::HIGHLY_INVERSIONAL, SortOrder::ASCENDING, 0.1);
+            std::vector<int> data2 = data1;
+
+            total_comp_randquick += RandomisedQuickSort::sort(data1, PartitionScheme::LOMUTO);
+            QuickSort::sort(data2, 0, data2.size()-1, PartitionScheme::LOMUTO);
+            total_comp_quick += QuickSort::getComparisons();
+            QuickSort::resetComparisons();
+        }
+
+        file << datasize << "," << total_comp_randquick / TRAILS << "," << total_comp_quick / TRAILS << "\n";
+    }
+
+    // sorted data set
+
+    std::fstream file2("Assignments/Assignment_2/cpp/q8_randomized_quick_sort/q8_RandQuickVSQuickHoare.csv", std::ios::in | std::ios::out | std::ios::trunc);
+    if(!file2.is_open()) throw std::runtime_error("File does not exist or cannot be open");
+
+    file2 << "Datasize,RandQuickComp,QuickComp\n";
+
+    for(int datasize = 1; datasize <= MAX_SIZE; datasize++) {
+        int total_comp_randquick = 0;
+        int total_comp_quick = 0;
+
+        for(int t = 1; t <= TRAILS; t++) {
+            std::vector<int> data1 = generator.generateInput(datasize, 1, 1e3, InputType::HIGHLY_INVERSIONAL, SortOrder::ASCENDING, 0.1);
+            std::vector<int> data2 = data1;
+
+            total_comp_randquick += RandomisedQuickSort::sort(data1, PartitionScheme::HOARE);
+            QuickSort::sort(data2, 0, data2.size()-1, PartitionScheme::HOARE);
+            total_comp_quick += QuickSort::getComparisons();
+            QuickSort::resetComparisons();
+        }
+
+        file2 << datasize << "," << total_comp_randquick / TRAILS << "," << total_comp_quick / TRAILS << "\n";
+    }
 
     return 0;
 }
