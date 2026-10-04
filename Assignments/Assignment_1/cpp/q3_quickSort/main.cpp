@@ -135,6 +135,7 @@ int main(){
     double avgQSort = static_cast<double>(qSortComparison)/TRIALS;
     double avgHSort = static_cast<double>(hSortComparison)/TRIALS;
     file2<< datasize << ", " << avgQSort << ", " << avgHSort << "\n";
+}
     file2.close();
 
     return 0;

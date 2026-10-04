@@ -16,6 +16,8 @@ unsigned long long mod_mul(unsigned long long a, unsigned long long b, unsigned 
     return res;
 }
 
+ 
+
 // Fast modular exponentiation: (base^exp) % mod
 unsigned long long mod_pow(unsigned long long base, unsigned long long exp, unsigned long long mod) {
     unsigned long long res = 1;
@@ -140,7 +142,7 @@ struct TestMetrics {
 };
 
 int main() {
-    const std::string input_filename = "numbers.txt"; // Use file containing both primes and composites
+    const std::string input_filename = "E:\\1st semester\\8 Advanced Data Structure Laboratory CS6173\\Assignments\\Assignment_2\\cpp\\q6_primality_testing\\numbers.txt"; // Use file containing both primes and composites
     const std::string output_filename = "primality_comparison_results.csv";
     
     // k = 1 exposes false positive rates for comparison
